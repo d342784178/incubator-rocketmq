@@ -74,6 +74,9 @@ public abstract class NettyRemotingAbstract {
         this.nettyEventExecuter.putNettyEvent(event);
     }
 
+    /**
+     * 处理接收到的消息
+     */
     public void processMessageReceived(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
         final RemotingCommand cmd = msg;
         if (cmd != null) {
@@ -104,7 +107,7 @@ public abstract class NettyRemotingAbstract {
                         if (rpcHook != null) {
                             rpcHook.doBeforeRequest(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), cmd);
                         }
-
+                        //分发到不同的processor中去处理
                         final RemotingCommand response = pair.getObject1().processRequest(ctx, cmd);
                         if (rpcHook != null) {
                             rpcHook.doAfterResponse(RemotingHelper.parseChannelRemoteAddr(ctx.channel()), cmd, response);

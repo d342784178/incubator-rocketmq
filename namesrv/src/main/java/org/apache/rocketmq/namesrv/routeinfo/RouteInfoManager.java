@@ -51,8 +51,7 @@ public class RouteInfoManager {
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
     /**
      * broker名 与 broker数据 Map
-     * 一个broker名下可以有多个broker，即broker可以同名
-     * TODO 疑问：需要研究下
+     * 一个broker名下有broker集群，broker可以同名
      */
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
     /**
@@ -141,7 +140,7 @@ public class RouteInfoManager {
         try {
             try {
                 this.lock.writeLock().lockInterruptibly(); // TODO 疑问：为什么要两层try
-                // 更新集群信息
+                // 更新
                 Set<String> brokerNames = this.clusterAddrTable.get(clusterName);
                 if (null == brokerNames) {
                     brokerNames = new HashSet<String>();
@@ -151,6 +150,7 @@ public class RouteInfoManager {
 
                 // 更新broker信息
                 boolean registerFirst = false;
+                //根据brokderName获取broker集群
                 BrokerData brokerData = this.brokerAddrTable.get(brokerName);
                 if (null == brokerData) {
                     registerFirst = true;
@@ -161,6 +161,7 @@ public class RouteInfoManager {
 
                     this.brokerAddrTable.put(brokerName, brokerData);
                 }
+                //将broker添加到broker集群中
                 String oldAddr = brokerData.getBrokerAddrs().put(brokerId, brokerAddr);
                 registerFirst = registerFirst || (null == oldAddr);
 
@@ -199,7 +200,7 @@ public class RouteInfoManager {
                     }
                 }
 
-                // TODO 待读：broker集群需要看
+                //去brokerid为0的作为master
                 if (MixAll.MASTER_ID != brokerId) {
                     String masterAddr = brokerData.getBrokerAddrs().get(MixAll.MASTER_ID);
                     if (masterAddr != null) {
