@@ -31,6 +31,12 @@ import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * |消息头属性|消息头|消息体|
+ * |  4byte  |     |      |
+ *
+ * 消息头属性=1byte(消息头类型)+3byte(消息头长度)
+ */
 public class RemotingCommand {
     public static final String SERIALIZE_TYPE_PROPERTY = "rocketmq.serialize.type";
     public static final String SERIALIZE_TYPE_ENV = "ROCKETMQ_SERIALIZE_TYPE";
@@ -141,15 +147,19 @@ public class RemotingCommand {
     }
 
     public static RemotingCommand decode(final ByteBuffer byteBuffer) {
+        //报文总长度
         int length = byteBuffer.limit();
+        //消息头属性
         int oriHeaderLen = byteBuffer.getInt();
+        //消息头长度
         int headerLength = getHeaderLength(oriHeaderLen);
 
         byte[] headerData = new byte[headerLength];
         byteBuffer.get(headerData);
-
+        //消息头
         RemotingCommand cmd = headerDecode(headerData, getProtocolType(oriHeaderLen));
 
+        //消息体
         int bodyLength = length - 4 - headerLength;
         byte[] bodyData = null;
         if (bodyLength > 0) {
@@ -161,6 +171,9 @@ public class RemotingCommand {
         return cmd;
     }
 
+    /**
+     * 取后3个字节 为消息头长度
+     */
     public static int getHeaderLength(int length) {
         return length & 0xFFFFFF;
     }
@@ -171,7 +184,7 @@ public class RemotingCommand {
                 RemotingCommand resultJson = RemotingSerializable.decode(headerData, RemotingCommand.class);
                 resultJson.setSerializeTypeCurrentRPC(type);
                 return resultJson;
-            case ROCKETMQ:
+            case ROCKETMQ://节省控件
                 RemotingCommand resultRMQ = RocketMQSerializable.rocketMQProtocolDecode(headerData);
                 resultRMQ.setSerializeTypeCurrentRPC(type);
                 return resultRMQ;
@@ -182,6 +195,9 @@ public class RemotingCommand {
         return null;
     }
 
+    /**
+     * 取第一个字节 为消息头类型
+     */
     public static SerializeType getProtocolType(int source) {
         return SerializeType.valueOf((byte) ((source >> 24) & 0xFF));
     }
