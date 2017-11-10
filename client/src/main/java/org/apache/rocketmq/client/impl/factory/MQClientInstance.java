@@ -59,6 +59,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * MQClient对象
+ * producer,consumer都视为一个MQClient对象
+ * 内部存有producer,consumer对象
  */
 public class MQClientInstance {
     private final static long LOCK_TIMEOUT_MILLIS = 3000;
@@ -243,6 +245,9 @@ public class MQClientInstance {
         return mqList;
     }
 
+    /**
+     * 启动客户端
+     */
     public void start() throws MQClientException {
 
         synchronized (this) {

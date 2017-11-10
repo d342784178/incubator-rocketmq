@@ -334,7 +334,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
                                 // 提交拉取到的消息到消息处理队列
                                 boolean dispathToConsume = processQueue.putMessage(pullResult.getMsgFoundList());
 
-                                // 提交消费请求
+                                // 提交消费请求到ConsumerMessageService 进行消费
                                 DefaultMQPushConsumerImpl.this.consumeMessageService.submitConsumeRequest(//
                                     pullResult.getMsgFoundList(), //
                                     processQueue, //

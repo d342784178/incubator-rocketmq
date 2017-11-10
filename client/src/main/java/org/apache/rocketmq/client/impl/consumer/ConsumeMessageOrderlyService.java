@@ -40,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * 顺序消费消息服务
+ */
 public class ConsumeMessageOrderlyService implements ConsumeMessageService {
     private static final Logger log = ClientLogger.getLog();
     private final static long MAX_TIME_CONSUME_CONTINUOUSLY =

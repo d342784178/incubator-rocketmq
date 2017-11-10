@@ -67,6 +67,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * MQClient API实现
+ * 封装客户端指令实现
  */
 public class MQClientAPIImpl {
 
