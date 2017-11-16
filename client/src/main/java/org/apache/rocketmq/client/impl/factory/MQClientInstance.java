@@ -283,6 +283,10 @@ public class MQClientInstance {
         }
     }
 
+    /**
+     * 各种定时任务
+     * namesrv topic路由配置 消费进度 持久化消费进度 调整线程池
+     */
     private void startScheduledTask() {
         if (null == this.clientConfig.getNamesrvAddr()) { // TODO 待读：获取namesrv，从url
             this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {

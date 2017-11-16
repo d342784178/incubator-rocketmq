@@ -470,6 +470,7 @@ public abstract class RebalanceImpl {
 
     /**
      * 发起消息拉取请求
+     * pushConsumer会添加pullRequest pullConsumer无动作
      *
      * @param pullRequestList 请求
      */

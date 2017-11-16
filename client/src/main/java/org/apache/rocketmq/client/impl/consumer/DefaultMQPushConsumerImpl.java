@@ -274,6 +274,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         } else { // TODO 顺序消费
             if (processQueue.isLocked()) {
                 if (!pullRequest.isLockedFirst()) {
+                    //计算offset
                     final long offset = this.rebalanceImpl.computePullFromWhere(pullRequest.getMessageQueue());
                     boolean brokerBusy = offset < pullRequest.getNextOffset();
                     log.info("the first time to pull message, so fix offset from broker. pullRequest: {} NewOffset: {} brokerBusy: {}",
@@ -679,6 +680,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
                     this.consumeOrderly = false;
                     this.consumeMessageService = new ConsumeMessageConcurrentlyService(this, (MessageListenerConcurrently) this.getMessageListenerInner());
                 }
+                //开启consumService
                 this.consumeMessageService.start();
 
                 // 设置MQClient对象
@@ -890,7 +892,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
             if (null == this.messageListenerInner) {
                 this.messageListenerInner = this.defaultMQPushConsumer.getMessageListener();
             }
-
+            //根据消费模式的不同 添加不同的filterSer
             switch (this.defaultMQPushConsumer.getMessageModel()) {
                 case BROADCASTING:
                     break;
@@ -931,6 +933,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
 
     /**
      * 订阅 Topic
+     * 实际就是创建一个filterSer
      *
      * @param topic Topic
      * @param subExpression 订阅表达式
